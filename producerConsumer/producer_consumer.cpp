@@ -12,7 +12,7 @@ struct Item {
 } gItem; // 产品库全局变量, 生产者和消费者操作该变量.
 
 
-void ProduceItem(Item &item, int item)
+void ProduceItem(Item &item, int num)
 {
 	std::unique_lock<std::mutex> lock(item.mtx);
 	// item buffer is full
@@ -21,7 +21,7 @@ void ProduceItem(Item &item, int item)
 		item.repo_not_full.wait(lock); // 生产者等待"产品库缓冲区不为满"这一条件发生.
 	}
 
-	item.item_buffer.push_back(item);
+	item.item_buffer.push_back(num);
 	item.repo_not_empty.notify_all(); // 通知消费者产品库不为空.
 	lock.unlock(); 
 }
