@@ -21,7 +21,7 @@ void ProduceItem(Item &item, int num)
 		item.repo_not_full.wait(lock); // 生产者等待"产品库缓冲区不为满"这一条件发生.
 	}
 
-	item.item_buffer.push_back(num);
+	item.item_buffer.emplace_back(num);
 	item.repo_not_empty.notify_all(); // 通知消费者产品库不为空.
 	lock.unlock(); 
 }

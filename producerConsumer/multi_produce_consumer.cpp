@@ -23,7 +23,7 @@ void ProduceItem(Item &item, int num)
 		(item.repo_not_full).wait(lock);
 	}
 
-	item.item_buffer.push_back(num);
+	item.item_buffer.emplace_back(num);
 
 	item.repo_not_empty.notify_all();
 	lock.unlock();
