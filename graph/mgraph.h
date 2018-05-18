@@ -1,4 +1,4 @@
-//无向图MGraph.h															
+//文件名MGraph.h															
 #ifndef MGRAPH_H
 #define MGRAPH_H
 #include<iostream>
@@ -54,7 +54,7 @@ MGraph<T>::MGraph(vector<T> ver_input, multimap<int,int> arc_input)
 		s->adjvex = a.second;
 		s->next = vertex[a.first].firstedge;
 		vertex[a.first].firstedge = s;
-		// 无向图两个节点都存储边信息
+		// 无向图两个节点都存储边信息，注释掉下面四行代码，变为有向图
 		auto n = new ArcNode;
 		n->adjvex = a.first;
 		n->next = vertex[a.second].firstedge;
@@ -140,15 +140,15 @@ template<typename T>
 MGraph<T>::~MGraph()
 {
 	ArcNode * temp = nullptr;
-	ArcNode * temp1 = nullptr;
 	for_each(vertex.begin(), vertex.end(), [&](auto p) 
 	{
 		temp = p.firstedge;
 		while (temp) {
-			temp1 = temp;
-			temp = temp->next;
-			free(temp1);
+			p.firstedge = temp->next;
+			delete(temp);
+			temp = p.firstedge;
 		}
+		p.firstedge = nullptr;
 	});
 }
 

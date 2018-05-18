@@ -24,8 +24,13 @@ int main()
 	setarc.insert(pair<int, int>(8, 10));
 	MGraph<int> graph(vec, setarc);
 
-	graph.DFSTraverse(0);
-	graph.BFSTraverse(0);
+	graph.DFSTraverse(0);  
+	// 无向图深度遍历0 1 2 3 6 5 4 7 8 10 9
+	// 有向图深度遍历0 1 2 3 6 8 10 5 4 7 9
+	
 
+	graph.BFSTraverse(0);  
+	// 无向图广度遍历 0 1 4 2 5 7 3 6 8 9 10
+	// 有向图广度遍历 0 1 4 2 5 7 3 6 8 9 10
 	return 0;
 }
