@@ -1,4 +1,4 @@
-//文件名MGraph.h															
+//文件名MGraph.h 邻接表实现，对于无向图入度和出度相同，对于有向图方便查出度，不方便查入度																
 #ifndef MGRAPH_H
 #define MGRAPH_H
 #include<iostream>
@@ -11,13 +11,13 @@ using namespace std;
 struct ArcNode {
 	int adjvex;
 	ArcNode * next;
-};
+}; //边信息
 
 template<typename T>
 struct VerNode {
 	T data;
 	ArcNode * firstedge;
-};
+}; //顶点数组
 
 template<typename T>
 class MGraph
@@ -25,7 +25,7 @@ class MGraph
 private:
 	vector<VerNode<T>> vertex;
 public:
-	MGraph(vector<T> ver_in, multimap<int, int> arc_input);//邻接矩阵存储，建立具有n个顶点e条边的图
+	MGraph(vector<T> ver_in, multimap<int, int> arc_input);//邻接表存储，建立具有n个顶点e条边的图
 	~MGraph();
 	bool DFSTraverse(int v);
 	bool BFSTraverse(int v);
@@ -37,6 +37,7 @@ int MGraph<T>::GetNodeNum()
 	return vertex.size();
 }
 
+//邻接表存储方便查询出度，不方便查询有向图入度，无向图的入度即是出度
 template<typename T>
 MGraph<T>::MGraph(vector<T> ver_input, multimap<int,int> arc_input)
 {
@@ -62,6 +63,18 @@ MGraph<T>::MGraph(vector<T> ver_input, multimap<int,int> arc_input)
 	});   //存储图的边信息
 }
 
+/*
+非递归实现
+（1）栈S初始化；visited[n]=0；
+（2）访问顶点v；visited[v]=1；顶点v入栈S
+（3）while(栈S非空)
+		x=栈S的顶元素(不出栈)；
+		if(存在并找到未被访问的x的邻接点w)
+			访问w；visited[w]=1；
+			w进栈;
+		else
+			x出栈；
+*/
 template<typename T>
 bool MGraph<T>::DFSTraverse(int v)
 {
@@ -93,6 +106,18 @@ bool MGraph<T>::DFSTraverse(int v)
 	return true;
 }
 
+/*
+（1）初始化队列Q；visited[n]=0；
+（2）访问顶点v；visited[v]=1；顶点v入队列Q；
+（3） while（队列Q非空）
+		v=队列Q的对头元素出队；
+		w=顶点v的第一个邻接点；
+		while（w存在）
+			如果w未访问，则访问顶点w；
+			visited[w]=1；
+			顶点w入队列Q；
+			w=顶点v的下一个邻接点。
+*/
 template<typename T>
 bool MGraph<T>::BFSTraverse(int v)
 {
