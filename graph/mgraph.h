@@ -1,4 +1,4 @@
-//文件名MGraph.h															
+//无向图MGraph.h															
 #ifndef MGRAPH_H
 #define MGRAPH_H
 #include<iostream>
@@ -26,7 +26,7 @@ private:
 	vector<VerNode<T>> vertex;
 public:
 	MGraph(vector<T> ver_in, multimap<int, int> arc_input);//邻接矩阵存储，建立具有n个顶点e条边的图
-	~MGraph() {}//析构函数为空
+	~MGraph();
 	bool DFSTraverse(int v);
 	bool BFSTraverse(int v);
 	int GetNodeNum();
@@ -54,6 +54,11 @@ MGraph<T>::MGraph(vector<T> ver_input, multimap<int,int> arc_input)
 		s->adjvex = a.second;
 		s->next = vertex[a.first].firstedge;
 		vertex[a.first].firstedge = s;
+		// 无向图两个节点都存储边信息
+		auto n = new ArcNode;
+		n->adjvex = a.first;
+		n->next = vertex[a.second].firstedge;
+		vertex[a.second].firstedge = n;  
 	});   //存储图的边信息
 }
 
@@ -64,20 +69,27 @@ bool MGraph<T>::DFSTraverse(int v)
 		return false;
 	vector<int> visited(GetNodeNum(),0);
 	visited[v] = 1;
-	cout << v << endl;
+	cout << v << " ";
 	deque<int> deq;
 	deq.push_back(v);
 	while (!deq.empty()) {
-		int x = deq.front();
-		if (vertex[x].firstedge && visited[vertex[x].firstedge->adjvex] == 0){
-			visited[vertex[x].firstedge->adjvex] = 1;
-			deq.push_back(vertex[x].firstedge->adjvex);
-			cout << vertex[x].firstedge->adjvex << endl;
+		int x = deq.back();
+		ArcNode * node = vertex[x].firstedge;
+		while (node && visited[node->adjvex] == 1)
+		{
+			node = node->next;
 		}
-		else {
+		if (node && visited[node->adjvex] == 0){
+			visited[node->adjvex] = 1;
+			deq.push_back(node->adjvex);
+			cout << node->adjvex << " ";
+		}
+		else
+		{
 			deq.pop_back();
 		}
 	}
+	cout << endl;
 	return true;
 }
 
@@ -88,18 +100,17 @@ bool MGraph<T>::BFSTraverse(int v)
 		return false;
 	vector<int> visited(GetNodeNum(), 0);
 	visited[v] = 1;
-	cout << v << endl;
+	cout << v << " ";
 	deque<int> deq;
 	deq.push_back(v);
 
-	int w;
-	int x;
+	int w, x;
 	ArcNode * node;
 	while (!deq.empty())
 	{
 		x = deq.front();
 		node = vertex[x].firstedge;
-		deq.pop_back();
+		deq.pop_front();
 		if (node != nullptr)
 		{
 			w = node->adjvex;
@@ -108,20 +119,37 @@ bool MGraph<T>::BFSTraverse(int v)
 				if (visited[w] == 0)
 				{
 					visited[w] = 1;
-					cout << w << endl;
-
+					cout << w << " ";
 					deq.push_back(w);
 				}
 				if (node->next)
 				{
-					w = node->adjvex;
 					node = node->next;
+					w = node->adjvex;
 				}
 				else
 					break;
 			}
 		}
 	}
+	cout << endl;
 	return true;
 }
+
+template<typename T>
+MGraph<T>::~MGraph()
+{
+	ArcNode * temp = nullptr;
+	ArcNode * temp1 = nullptr;
+	for_each(vertex.begin(), vertex.end(), [&](auto p) 
+	{
+		temp = p.firstedge;
+		while (temp) {
+			temp1 = temp;
+			temp = temp->next;
+			free(temp1);
+		}
+	});
+}
+
 #endif
